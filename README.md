@@ -62,3 +62,60 @@ Vector3 GetSeparationDir()
 Vector3 finalDir = (moveDir + separationSmooth * 0.5f).normalized;
 ```
 这种“微分离 + 群体协调”的设计，使整个鸟群在跟随时既保持整体队形，又避免个体重叠。
+
+### 避障系统
+当成员前方出现障碍物时，会自动检测并调整方向以避开障碍
+```csharp
+void ApplyObstacleAvoidance(ref Vector3 moveDir)
+{
+    RaycastHit hit;
+    Vector3 rayOrigin = transform.position + Vector3.up * 0.5f;
+
+    if (Physics.Raycast(rayOrigin, transform.forward, out hit, obstacleAvoidDistance, obstacleLayer))
+    {
+        Vector3 avoidDir = Vector3.Reflect(transform.forward, hit.normal);
+        avoidDir.y = 0;
+        moveDir = Vector3.Lerp(moveDir, avoidDir.normalized, Time.deltaTime * avoidForce);
+    }
+}
+```
+
+## 主角与敌人的导航寻路
+在该系统中，主角与敌人均通过NavMeshAgent实现智能寻路与动态交互。
+
+### 主角移动
+主角的移动逻辑由NavMeshAgent控制，玩家通过鼠标点击场景来实现导航寻路。
+```csharp
+void HandleMovement()
+{
+    if (Input.GetMouseButtonDown(0))
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            navMeshAgent.SetDestination(hit.point);
+        }
+    }
+}
+```
+玩家在场景中点击任意可行走区域，系统会使用Physics.Raycast()从摄像机发射射线检测地面碰撞点，并将该点设置为NavMeshAgent的目标位置。这样主角就会自动计算最优路径并平滑地移动到目标点。
+
+### 敌人自动寻路
+敌人的智能行为由EnemyLogic脚本控制，包含检测 → 追击 → 攻击 → 停止四个阶段。
+敌人会实时检测主角距离，并根据范围自动切换寻路状态。
+```csharp
+void HandleMovement()
+{
+    float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+    if (distanceToPlayer <= detectionRange)
+        agent.SetDestination(player.position);
+    else if (distanceToPlayer > missingRange)
+        agent.ResetPath();
+}
+```
+当主角进入 detectionRange 范围内时，敌人开始追踪玩家。
+
+当主角超出 missingRange，敌人会停止移动，保持原地状态。
+
+这种“进入追踪 / 离开脱战”的状态切换机制，保证了 AI 行为自然且高效。
