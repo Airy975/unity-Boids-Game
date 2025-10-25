@@ -117,3 +117,50 @@ void HandleMovement()
 当主角进入 detectionRange 范围内时，敌人开始追踪玩家。
 
 当主角超出 missingRange，敌人会停止移动，保持原地状态。
+
+## 幸存者、敌人与障碍物的自动生成系统
+在整个场景的初始化流程中，MainLogic 脚本负责在游戏开始时随机生成幸存者、敌人以及障碍物。通过可配置的生成范围与数量参数，系统能够在每次运行时产生动态变化、随机分布的战斗环境。
+
+### 自动生成的核心逻辑
+系统的入口位于Start() 方法中，当游戏运行时，会自动执行以下步骤
+```csharp
+void Start()
+{
+    // 检查是否设置预制体
+    if (survivorPrefab == null)
+    {
+        Debug.LogError("未指定幸存者预制体！");
+        return;
+    }
+    if (EnemyPrefab == null)
+    {
+        Debug.LogError("未指定敌人预制体！");
+        return;
+    }
+
+    // 随机生成幸存者数量
+    int spawnCount = Random.Range(minCount, maxCount + 1);
+    for (int i = 0; i < spawnCount; i++)
+    {
+        Vector3 randomPos = GetRandomPosition();
+        Instantiate(survivorPrefab, randomPos, Quaternion.identity);
+    }
+
+    // 随机生成敌人数量
+    int spawnEnemyCount = Random.Range(minCount, maxCount + 1);
+    for (int i = 0; i < spawnEnemyCount; i++)
+    {
+        Vector3 randomPos = GetRandomPosition();
+        Instantiate(EnemyPrefab, randomPos, Quaternion.identity);
+    }
+}
+```
+系统首先判断是否指定了对应的预制体（防止空引用）。
+
+使用 Random.Range() 在 minCount 与 maxCount 之间生成一个随机数量。
+
+每个对象在指定的areaSize内随机生成。
+
+使用 Instantiate() 实例化预制体，位置随机，朝向默认。
+
+这样，每次游戏启动都会在地面上随机生成数量不等的幸存者与敌人，从而实现“动态开局”的效果。
