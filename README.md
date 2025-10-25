@@ -164,3 +164,18 @@ void Start()
 使用 Instantiate() 实例化预制体，位置随机，朝向默认。
 
 这样，每次游戏启动都会在地面上随机生成数量不等的幸存者与敌人，从而实现“动态开局”的效果。
+
+### 随机生成位置计算
+随机位置的计算由GetRandomPosition()方法完成，确保生成点在设定区域内且避免穿地。
+```csharp
+Vector3 GetRandomPosition()
+{
+    Vector3 center = ground != null ? ground.position : transform.position;
+    float randomX = Random.Range(-areaSize.x / 2, areaSize.x / 2);
+    float randomZ = Random.Range(-areaSize.z / 2, areaSize.z / 2);
+    return new Vector3(center.x + randomX, center.y + yOffset, center.z + randomZ);
+}
+```
+这段代码以地面对象或脚本挂载点为中心，计算出生成区域的边界范围。之后通过Random.Range()生成随机的 X 与 Z 坐标，使对象分布在一个矩形区域中。最后使用yOffset参数略微抬高生成位置，避免模型与地面穿插。
+
+例如，当areaSize = (10, 0, 10) 时，系统会在以中心点为原点的 10x10 区域内均匀分布对象。
