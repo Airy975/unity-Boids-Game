@@ -117,5 +117,3 @@ void HandleMovement()
 当主角进入 detectionRange 范围内时，敌人开始追踪玩家。
 
 当主角超出 missingRange，敌人会停止移动，保持原地状态。
-
-这种“进入追踪 / 离开脱战”的状态切换机制，保证了 AI 行为自然且高效。
