@@ -2,6 +2,6 @@
 本项目为一款受鸟群算法启发的Unity游戏原型。玩家可通过鼠标点击在随机生成的障碍物地图中操控主角移动，系统基于Unity内置的NavMesh寻路实现自动路径规划。当主角接近其他幸存者时，幸存者会自动加入队伍并进行跟随，形成动态的群体移动行为；当队伍靠近敌人时，主角与跟随者将自动进行攻击与受伤判定，模拟出简易的群体协作与战斗机制。
 
 ## 游戏展示
-!()(https://github.com/Airy975/unity-Boids-Game/blob/main/image/1.png)
-!()(https://github.com/Airy975/unity-Boids-Game/blob/main/image/2.png)
-!()(https://github.com/Airy975/unity-Boids-Game/blob/main/image/3.png)
+![](https://github.com/Airy975/unity-Boids-Game/blob/main/image/1.png)
+![](https://github.com/Airy975/unity-Boids-Game/blob/main/image/2.png)
+![](https://github.com/Airy975/unity-Boids-Game/blob/main/image/3.png)
